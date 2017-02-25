@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body, html {
+        text-align:center;
+        margin: 0px;
+        width:100%;
+        height:auto;
+        }
+    </style>
+    <script type="text/javascript">
+    //pop new window
+        function popNewWindow(){
+            var urlValue = document.getElementById("url").value;
+             if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+             }
+            xmlhttp.open("GET",urlValue,false);
+            xmlhttp.send();
+            xmlDoc = xmlhttp.responseXML;
+         //判断错误 1 没有xml or invalid
+             if(xmlDoc == null){
+                alert("Error in XML File!");
+                return false;
+             }
+            //判断错误 2 没有airlincompany
+            var airCompanyNum = xmlDoc.getElementsByTagName("Airline").length;
+            if(airCompanyNum == 0){
+                alert(" Error in Xml File !  NO airline companies!");
+                return false;
+            }
+
+           var height = 1000;
+            var width = 1200;
+            var top=Math.round((window.screen.height-height)/2);
+            var left=Math.round((window.screen.width-width)/2);
+             var newWim =   window.open("", "", "height=" + height + ", width=" + width + ", top=" + top + ", left= " + left + ", toolbar=no, menubar=no, scrollbars=yes, resizable=no, location=yes, status=no");
+            <!--newWim.document.body.innerHTML="这是添加的内容<br>";-->
+
+            var headerDataVax = xmlDoc.getElementsByTagName("Data");
+            var rowVax = xmlDoc.getElementsByTagName("Row");
+            var hubsVax = xmlDoc.getElementsByTagName("Hubs");
+
+            newWim.document.write("<table border='1' width='100%'>");
+            newWim.document.write("<tr>");
+            for ( var i=0;i<headerDataVax.length;i++){
+                newWim.document.write("<td>");
+                newWim.document.write(headerDataVax[i].childNodes[0].nodeValue);
+                newWim.document.write("</td>");
+            }
+
+         newWim.document.write("</tr>");
+            for(var i = 0;i< rowVax.length;i++){
+                newWim.document.write("<tr>");
+                        newWim.document.write("<td>");
+                        if( rowVax[i].getElementsByTagName("Airline")[0].childNodes.length != 0){
+                             newWim.document.write(rowVax[i].getElementsByTagName("Airline")[0].childNodes[0].nodeValue);
+                        }
+                        newWim.document.write("</td>");
+                        newWim.document.write('<td style =' + 'width=10%;'+'>');
+                        if( rowVax[i].getElementsByTagName("IATA")[0].childNodes.length != 0){
+                              newWim.document.write(rowVax[i].getElementsByTagName("IATA")[0].childNodes[0].nodeValue);
+                        }
+                        newWim.document.write('</td>');
+
+                         newWim.document.write("<td>");
+                         newWim.document.write("<ul>");
+                          for(var k = 0;k<hubsVax[i].getElementsByTagName('Hub').length; k++){
+                          if(hubsVax[0].childNodes.length != 0){
+                           var hubContent =hubsVax[i].getElementsByTagName('Hub')[k].childNodes[0].nodeValue;
+                            newWim.document.write("<li>");
+                            newWim.document.write(hubContent);
+                            newWim.document.write("</li>");
+                          }
+
+                          }
+                          newWim.document.write("</ul>");
+                        newWim.document.write("</td>");
+
+
+
+                        newWim.document.write('<td width="25%">');
+                        if( rowVax[i].getElementsByTagName("Notes")[0].childNodes.length != 0){
+                             var noteValue = rowVax[i].getElementsByTagName("Notes")[0].childNodes[0].nodeValue;
+                             newWim.document.write(noteValue);
+                        }else{
+                        }
+                        newWim.document.write("</td>");
+
+                         newWim.document.write('<td>');
+                          if( rowVax[i].getElementsByTagName("HomePage")[0].childNodes.length != 0){
+
+                            var aLink = rowVax[i].getElementsByTagName("HomePage")[0].childNodes[0].nodeValue;
+                         newWim.document.write('<a  href ='+ aLink + '>'  + aLink+ '</a>');
+                            }
+
+                         newWim.document.write("</td>");
+
+
+                        newWim.document.write('<td width="30%" height="80%">');
+                            if( rowVax[i].getElementsByTagName("Plane")[0].childNodes.length != 0){
+                              var imgShow = rowVax[i].getElementsByTagName("Plane")[0].childNodes[0].nodeValue;
+                         newWim.document.write('<img  src ='+ imgShow + '+ width="100%" + height="80%"></img>');
+                        }
+
+                        newWim.document.write('</td>');
+
+                newWim.document.write("</tr>");
+            }
+             newWim.document.write("</table>");
+        }
+</script>
+</head>
+<body>
+<div style="margin-top:10%">
+    <p>
+        Enter URL for Airlines List XML File
+    </p>
+    <input type="text"  id="url" placeholder="airlines.xml" size="22" value="airlines.xml"/><br><br><br>
+    <input type="button"  onclick="popNewWindow()" value="Submit Query"/>
+</div>
+</body>
+</html>
